@@ -1,53 +1,53 @@
-const N = 10;
+const N = 10
 
 class Board {
-  constructor(w = 10, h = 10) {
-    this.w = w;
-    this.h = h;
-    for (let i = 0; i < w; i++) {
-      this[i] = {};
-      for (let j = 0; j < h; j++) {
-        this[i][j] = 0;
-      }
-    }
-    this.status = 0;
-  }
-
-  draw() {
-    push();
-    scale(1, -1);
-    translate(R + -0.5, -10 * D - R + 0.5);
-    let w = this.w;
-    let h = this.h;
-
-    fill("#DEB887");
-    noStroke();
-    rect(-R, -R, w * D + D, h * D + D);
-
-    stroke("black");
-    fill("black");
-    for (let i = 0; i < w; i++) {
-      let x = i * D + R;
-      line(x, R, x, h * D);
+    constructor(w = 10, h = 10) {
+        this.w = w
+        this.h = h
+        for (let i = 0; i < w; i++) {
+            this[i] = {}
+            for (let j = 0; j < h; j++) {
+                this[i][j] = 0
+            }
+        }
+        this.status = 0
     }
 
-    for (let j = 0; j < h; j++) {
-      let y = j * D + R;
-      line(R, y, h * D, y);
-    }
+    draw() {
+        push()
+        scale(1, -1)
+        translate(R + -0.5, -10 * D - R + 0.5)
+        let w = this.w
+        let h = this.h
 
-    for (let i = 0; i < w; i++) {
-      for (let j = 0; j < h; j++) {
-        let x = i * D + R;
-        let y = j * D + R;
-        if (this[i][j] == 0) continue;
-        fill(this[i][j] == 1 ? "black" : "white");
-        circle(x, y, D - 1);
-      }
-    }
+        fill("#DEB887")
+        noStroke()
+        rect(-R, -R, w * D + D, h * D + D)
 
-    pop();
-  }
+        stroke("black")
+        fill("black")
+        for (let i = 0; i < w; i++) {
+            let x = i * D + R
+            line(x, R, x, h * D)
+        }
+
+        for (let j = 0; j < h; j++) {
+            let y = j * D + R
+            line(R, y, h * D, y)
+        }
+
+        for (let i = 0; i < w; i++) {
+            for (let j = 0; j < h; j++) {
+                let x = i * D + R
+                let y = j * D + R
+                if (this[i][j] == 0) continue
+                fill(this[i][j] == 1 ? "black" : "white")
+                circle(x, y, D - 1)
+            }
+        }
+
+        pop()
+    }
 }
 
 const allBoards = `
@@ -146,17 +146,17 @@ const allBoards = `
 1111111111110001111110222001111021120111102002201110210120111022222011110000011111111111111111111111 2 
 0120111111002011111101201111111220111111220111111100011111111111111111111111111111111111111111111111 1
 `
-  .trim()
-  .split("\n")
-  .map((s) => {
-    s = s.split(" ");
-    let b = new Board();
-    b.status = Number(s[1]);
-    s = s[0];
-    for (let i = 0; i < N; i++) {
-      for (let j = 0; j < N; j++) {
-        b[i][j] = s[i * 10 + j] - 1;
-      }
-    }
-    return b;
-  });
+    .trim()
+    .split("\n")
+    .map((s) => {
+        s = s.split(" ")
+        let b = new Board()
+        b.status = Number(s[1])
+        s = s[0]
+        for (let i = 0; i < N; i++) {
+            for (let j = 0; j < N; j++) {
+                b[i][j] = s[i * 10 + j] - 1
+            }
+        }
+        return b
+    })
