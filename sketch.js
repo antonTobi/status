@@ -64,7 +64,7 @@ function draw() {
 
     fill("black")
 
-    textSize(0.6 * R)
+    textSize(0.8 * R)
     text("Time", width / 6, 0.7 * R)
     text("Score", (3 * width) / 6, 0.7 * R)
     text("Best", (5 * width) / 6, 0.7 * R)
