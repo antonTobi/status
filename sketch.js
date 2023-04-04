@@ -144,10 +144,10 @@ function submit(status) {
 }
 
 function clickHandler() {
-    if (mouseY < 14 * D && timer == 0) {
+    if (mouseY < 13 * D && timer == 0) {
         setup()
     }
-    if (mouseY > 14 * D) {
+    if (mouseY > 13 * D) {
         if (mouseX < width / 3) {
             submit(1)
         } else if (mouseX < (2 * width) / 3) {
