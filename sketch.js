@@ -13,11 +13,11 @@ class Particle {
 function preload() {
   soundFormats("mp3", "ogg");
 
-  correctSound = loadSound("Move.mp3");
-  wrongSound = loadSound("Error.mp3");
-  timeUpSound = loadSound("energy3.mp3");
+  correctSound = loadSound("assets/Move.mp3");
+  wrongSound = loadSound("assets/Error.mp3");
+  timeUpSound = loadSound("assets/energy3.mp3");
 
-  font = loadFont("Roboto-Light.ttf");
+  font = loadFont("assets/Roboto-Light.ttf");
 }
 
 function windowResized() {
