@@ -21,6 +21,10 @@ There are no positions involving direct kos, but [bent four in the corner](https
 | Alive     | Right arrow   |
 | New game  | Enter         |
 
+## Endless mode
+
+If you prefer playing without time pressure, click the timer (while it's not running) to enable endless mode.
+
 ## Credits
 
 Made with [p5.js](https://p5js.org/).
