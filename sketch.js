@@ -156,6 +156,7 @@ function submit(status) {
         wrongSound.play()
         points -= 1
         if (timer == Infinity || points < 0) points = 0
+        // else timer = 0
         let p = new Particle("red", "-1", x, R)
         particles.push(p)
     }
