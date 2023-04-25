@@ -1,5 +1,9 @@
-const startTime = 30e3
+const startTime = 60e3
+const increment = 1e3
 document.bgColor = "white"
+
+// TODO Show problem(s) to learn from after game over
+// Last problem (either you got it incorrect or you timed out on it) + maybe slowest solved problem
 
 document.addEventListener('mousedown', function (event) {
     if (event.detail > 1) {
@@ -33,22 +37,37 @@ function windowResized() {
     resizeCanvas(D * 11 - 1, D * 16 - 1)
 }
 
+function updateBoard() {
+    let i = round(difficultyLevel)
+    if (!boards[i].length) {
+        boards[i] = shuffle(boardsOfDifficulty[i].filter(b => b != board))
+    }
+    board = boards[i].pop()
+}
+
 function setup() {
     cnv = createCanvas(0, 0)
     cnv.mousePressed(clickHandler)
     windowResized()
     textAlign(CENTER, CENTER)
     textFont(font)
-    boards = shuffle(allBoards)
-    board = boards.pop()
+    difficultyLevel = 1
+    boards = new Array(6)
+    for (let i = 1; i <= 5; i ++) {
+        boards[i] = shuffle(boardsOfDifficulty[i])
+    }
+    updateBoard()
+    lastSolveTimeStamp = -Infinity
 
     points = 0
 
     highscore = getItem("statusGameHighscore") || 0
     longestStreak = getItem("statusGameLongestStreak") || 0
-    timer = Number(getItem("statusGameLastMode") || startTime)
+    timer = getItem("infiniteMode") ? Infinity : startTime
 
     timerRunning = false
+    gameOver = false
+    
 
     particles = []
 }
@@ -62,6 +81,7 @@ function draw() {
             timeUpSound.play()
             timer = 0
             timerRunning = false
+            gameOver = true
 
             if (points > highscore) {
                 storeItem("statusGameHighscore", points)
@@ -75,18 +95,28 @@ function draw() {
 
     textSize(0.8 * R)
     text("Time", width / 6, 0.7 * R)
-    text(endless ? "Streak" : "Score", (3 * width) / 6, 0.7 * R)
-    text("Best", (5 * width) / 6, 0.7 * R)
+    if (endless) {
+        text("Difficulty", 3 * width / 6, 0.7 * R)
+    } else {
+        text("Score", 3 * width / 6, 0.7 * R)
+        text("Best", 5 * width / 6, 0.7 * R)
+    }
+    
 
     textSize(D)
     let displayTime = endless ? "∞" : (0.001 * timer).toFixed(1)
     text(displayTime, width / 6, D)
-    text(points, (3 * width) / 6, D)
-    text(endless ? longestStreak : highscore, (5 * width) / 6, D)
+    if (endless) {
+        text(difficultyLevel, 3 * width / 6, D)
+    } else {
+        text(points, 3 * width / 6, D)
+        text(highscore, 5 * width / 6, D)
+    }
+
 
     translate(0, 2 * D)
     board.draw()
-    if (timer == 0) {
+    if (gameOver) {
         noStroke()
         fill(255, 255, 255, 220)
         rect(0, -1, 11 * D, 11 * D + 1)
@@ -130,45 +160,41 @@ function draw() {
 }
 
 function submit(status) {
-    if (timer == 0) return
+    if (gameOver) return
 
     sizes[status] = 0.8 * D
     let x = [0, 0, (2 * width) / 3, width / 3][status]
     if (status == board.status) {
-        if (timer == startTime) {
+        correctSound.play()    
+        if (timer != Infinity) {
             timerRunning = true
+            let solveTime = (millis() - lastSolveTimeStamp)/1000
+            difficultyLevel -= 0.5*atan((solveTime-3)/TAU)
+            difficultyLevel = constrain(difficultyLevel, 1, 4) // change to 5 once there is enough difficulty 5 problems
+            lastSolveTimeStamp = millis()
+            timer += increment
+            points += board.difficulty
         }
-        correctSound.play()
-        points += 1
-        if (timer == Infinity) {
-            if (points > longestStreak) {
-                longestStreak = points
-                storeItem("statusGameLongestStreak", longestStreak)
-            }
-        }
-        let p = new Particle("lime", "+1", x, R)
+        let p = new Particle("lime", "+" + board.difficulty, x, R)
         particles.push(p)
-        if (!boards.length) {
-            boards = shuffle(allBoards)
-        }
-        board = boards.pop()
+        updateBoard()
     } else {
         wrongSound.play()
-        points -= 1
-        if (timer == Infinity || points < 0) points = 0
-        // else timer = 0
-        let p = new Particle("red", "-1", x, R)
-        particles.push(p)
+        if (timer == Infinity) {
+            wrongSound.play()
+            let p = new Particle("red", "-1", x, R)
+            particles.push(p)
+        } else {
+            timerRunning = false
+            gameOver = true
+        }
+        
     }
 }
 
 function toggleGameMode() {
-    if (timer == Infinity || timer == startTime || timer == 0) {
-        if (timer == Infinity) {
-            storeItem("statusGameLastMode", startTime)
-        } else {
-            storeItem("statusGameLastMode", Infinity)
-        }
+    if (!timerRunning) {
+        storeItem("infiniteMode", timer != Infinity)
         setup()
     }
 }
@@ -177,6 +203,19 @@ function clickHandler() {
     if (mouseY < 2 * D) {
         if (mouseX < width / 3) {
             toggleGameMode()
+        } else if (mouseX < 2 * width / 3) {
+            if (timer == Infinity) {
+                difficultyLevel += 1
+                if (difficultyLevel == 5) difficultyLevel = 1
+                updateBoard()
+            }
+        } else {
+            if (timer != Infinity && !timerRunning) {
+                if (confirm("Reset highscore?")) {
+                    storeItem("statusGameHighscore", 0)
+                    setup()
+                }
+            }
         }
     }
     if (mouseY > 2 * D && mouseY < 13 * D && timer == 0) {
