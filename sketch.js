@@ -218,7 +218,7 @@ function clickHandler() {
             }
         }
     }
-    if (mouseY > 2 * D && mouseY < 13 * D && timer == 0) {
+    if (mouseY > 2 * D && mouseY < 13 * D && gameOver) {
         setup()
     }
     if (mouseY > 13 * D) {
