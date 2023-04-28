@@ -16,7 +16,7 @@ A black group is *dead* if white can kill all the black stones, no matter who pl
 
 If a group is neither dead or alive, it's *unsettled*. Whether it lives or dies depends on who plays first and/or who has more ko threats.
 
-We ignore the existence of unremovable ko threats, as the situations where an umremovable ko threat affects the status of another group are quite rare. This way our definition matches the practical fact that [bent four in the corner](https://senseis.xmp.net/?BentFourInTheCorner) is usually dead.
+We ignore the existence of unremovable ko threats, as the situations where an unremovable ko threat affects the status of another group are quite rare. This way our definition matches the practical fact that [bent four in the corner](https://senseis.xmp.net/?BentFourInTheCorner) is usually dead.
 
 We also ignore the possibility that the opponent has an infinite source of ko threats elsewhere on the board (for instance in a double ko seki). Double ko life counts as life, double ko death counts as death.
 
