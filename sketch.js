@@ -118,38 +118,56 @@ function draw() {
     board.draw()
     if (gameOver) {
         noStroke()
-        fill(255, 255, 255, 220)
-        rect(0, -1, 11 * D, 11 * D + 1)
+        fill(255, 255, 255, 200)
+        rect(5*R, 1*R-1, 6*D, 3*D, R)
+        // rect(0, -1, 11 * D, 11 * D + 1)
         fill("black")
         textSize(D)
-        text("Game over", 11 * R, 8.8 * R)
+        text(timer == 0 ? "Time's up!" : "Wrong!", 11 * R, 2.8 * R)
         textSize(R)
-        text("Click board to play again", 11 * R, 10.9 * R)
+        text("This group is " + ["dead", "alive", "unsettled"][board.status-1] + ".", 11 * R, 4.9 * R)
+        textSize(0.6*R)
+        fill(0, 100)
+        text(board.hash(), 21*R, 21.5*R)
     }
     translate(0, D * 12 - 1)
-
-    for (let i in sizes) {
-        sizes[i] -= 2
-        if (sizes[i] < R) sizes[i] = R
-    }
-
-    fill("black")
-
-    translate(width / 6, 0)
-    push()
-    textSize(sizes[1])
-    text("Dead", 0, 0)
-    translate(width / 3, 0)
-    textSize(sizes[3])
-    text("Unsettled", 0, 0)
-    translate(width / 3, 0)
-    textSize(sizes[2])
-    text("Alive", 0, 0)
-
-    pop()
-
     textSize(R)
 
+    fill("black")
+    if (gameOver) {
+        let s = "Click on the board (or press Enter)\nto start a new game."
+        if (points > highscore) {
+            if (timer == 0) {
+                s = "Well done, you beat your personal best!"
+            } else {
+                s = "Only runs without mistakes\ncount for your personal best!"
+            }
+        }
+        text(s, width/2, 0)
+    } else {
+        for (let i in sizes) {
+            sizes[i] -= 2
+            if (sizes[i] < R) sizes[i] = R
+        }
+        push()
+        
+    
+        translate(width / 6, 0)
+        
+        textSize(sizes[1])
+        text("Dead", 0, 0)
+        translate(width / 3, 0)
+        textSize(sizes[3])
+        text("Unsettled", 0, 0)
+        translate(width / 3, 0)
+        textSize(sizes[2])
+        text("Alive", 0, 0)
+
+        pop()
+    }
+
+    textSize(R)
+    
     for (let p of particles) {
         fill(p.c)
         text(p.s, p.x, p.y)
@@ -157,13 +175,14 @@ function draw() {
     }
 
     particles = particles.filter((p) => p.y < 500)
+
 }
 
 function submit(status) {
     if (gameOver) return
 
     sizes[status] = 0.8 * D
-    let x = [0, 0, (2 * width) / 3, width / 3][status]
+    let x = [0, width/6, (5 * width) / 6, 3*width / 6][status]
     if (status == board.status) {
         correctSound.play()    
         if (timer != Infinity) {
@@ -175,14 +194,15 @@ function submit(status) {
             timer += increment
             points += board.difficulty
         }
-        let p = new Particle("lime", "+" + board.difficulty, x, R)
+        let s = timer == Infinity ? "Correct!" : "+" + board.difficulty
+        let p = new Particle("lime", s, x, R)
         particles.push(p)
         updateBoard()
     } else {
         wrongSound.play()
         if (timer == Infinity) {
             wrongSound.play()
-            let p = new Particle("red", "-1", x, R)
+            let p = new Particle("red", "Wrong!", x, R)
             particles.push(p)
         } else {
             timerRunning = false
